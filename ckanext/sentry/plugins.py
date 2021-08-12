@@ -56,7 +56,7 @@ class SentryPlugin(plugins.SingletonPlugin):
         Based on @rshk work on
         https://github.com/opendatatrentino/ckanext-sentry
         '''
-        handler = SentryHandler(config.get('sentry.dsn'))
+        handler = SentryHandler()
         handler.setLevel(logging.NOTSET)
 
         loggers = ['', 'ckan', 'ckanext', 'sentry.errors']
