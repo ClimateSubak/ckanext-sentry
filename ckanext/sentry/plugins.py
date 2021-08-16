@@ -5,7 +5,7 @@ import os
 import logging
 
 import sentry_sdk
-from sentry_sdk.integrations.logging import SentryHandler
+from sentry_sdk.integrations.logging import LoggingIntegration, SentryHandler
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.rq import RqIntegration
 
@@ -46,9 +46,14 @@ class SentryPlugin(plugins.SingletonPlugin):
             self._configure_logging(config)
 
         log.debug('Adding Sentry middleware...')
+        sentry_log_level = config.get('sentry.log_level', logging.INFO)
         sentry_sdk.init(
             dsn=config.get('sentry.dsn'),
-            integrations=[FlaskIntegration(), RqIntegration()]
+            integrations=[
+                FlaskIntegration(),
+                LoggingIntegration(level=sentry_log_level),
+                RqIntegration()
+            ]
         )
         return app
 
