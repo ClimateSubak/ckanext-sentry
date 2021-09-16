@@ -69,10 +69,14 @@ class SentryPlugin(plugins.SingletonPlugin):
 
         loggers = ['', 'ckan', 'ckanext', 'sentry.errors']
         sentry_log_level = config.get('sentry.log_level', logging.INFO)
-        for name in loggers:
-            logger = logging.getLogger(name)
-            logger.addHandler(handler)
-            logger.setLevel(sentry_log_level)
+        logger = logging.getLogger()
+        # ensure we haven't already registered the handler
+        if SentryHandler not in map(lambda x: x.__class__, logger.handlers):
+            logger.addHandler(SentryHandler())
+            # Add StreamHandler to sentry's default so you can catch missed exceptions
+            logger = logging.getLogger('sentry.errors')
+            logger.propagate = False
+            logger.addHandler(logging.StreamHandler())
 
         log.debug('Setting up Sentry logger with level {0}'.format(
             sentry_log_level))
