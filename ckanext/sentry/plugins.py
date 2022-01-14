@@ -48,6 +48,7 @@ class SentryPlugin(plugins.SingletonPlugin):
         log.debug('Adding Sentry middleware...')
         sentry_log_level = config.get('sentry.log_level', logging.INFO)
         sentry_sdk.init(
+            environment=os.environ.get('ENVIRONMENT', 'noenv'),
             dsn=config.get('sentry.dsn'),
             integrations=[
                 FlaskIntegration(),
